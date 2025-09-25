@@ -1,0 +1,81 @@
+まず、次のコマンドを実行
+sudo apt install dnsmasq
+インストールをして、次のコマンドを実行
+sudo vim /etc/dnsmasq.conf
+そしたら、なんか文字がばーってでるから、Aキーを押して左下に「挿入」って表示させる
+一番下の行まで行く
+一番下の行に次の文字を追加する
+#Listen only on localhost
+listen-address=127.0.0.1
+
+#DNS servers to use
+server=8.8.8.8
+server=8.8.4.4
+
+書き込めたらEsc押しながら:キーを押す
+左下に:が現れたら「wq」と入力しEnterで終了
+
+次にdnsmasqの再起動をするために
+
+sudo systemctl restart dnsmasq
+
+次にシステム設定の書き換え
+
+sudo vim /etx/resolv.conf
+
+開いたらまたAキーで挿入を表示させる
+「nameserver」と書かれている行を全部消して、次の文字に書き換える
+
+nameserver 127.0.0.1
+
+そしたらEsc押しながら:キーで左下に:が出たら、wqでEnter。
+
+次に再起動すると設定が吹き飛ぶから、書き換えるようにする
+
+sudo vim
+
+実行。Aキーで挿入モードにしてこのコードをコピペ
+
+#!/bin/bash
+
+# resolv.confの内容を一時ファイルに書き出す
+echo "nameserver 127.0.0.1" > /tmp/new_resolv.conf
+
+# resolv.confを上書き
+sudo mv /tmp/new_resolv.conf /etc/resolv.conf
+
+echo "DNS setting updated successfully."
+
+書いたらEscと:キーで左下に:が出てきたら次のコマンドを打つ
+
+save /home/h29c02012/.update-dns.sh
+
+でEnter
+
+その後Escと:キーで左下に(略)
+wqを売って終了
+
+ターミナルでこれを実行
+
+sudo chmod +x update-dns.sh
+
+次に超重要
+
+sudo vim .bashrc
+
+でAで挿入に
+
+一番下の行にこれを追加
+
+# 仮想Linux起動時にDNS設定スクリプトを実行
+sh /home/h29c02012/.update-dns.sh
+
+でEscと(ry
+wqで終了
+
+以上。
+
+ターミナルを新しく開いたときに
+先頭の行に
+「DNS setting updated successfully.」って出てくれば多分うまく行ってる
+DiscordとかXとか開いて確かめてみて
